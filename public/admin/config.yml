@@ -1,11 +1,11 @@
 # Editor configuration (Sveltia CMS). Open /admin/ on your website to write.
 backend:
   name: github
-  repo: F2825/F2825.github.io
+  repo: F2825/Shifa-e-rooh
   branch: main
 
 media_folder: public/images/uploads
-public_folder: /images/uploads
+public_folder: /Shifa-e-rooh/images/uploads
 
 collections:
   - name: articles_en
