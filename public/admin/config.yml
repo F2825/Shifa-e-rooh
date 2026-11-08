@@ -1,7 +1,7 @@
 # Editor configuration (Sveltia CMS). Open /admin/ on your website to write.
 backend:
   name: github
-  repo: OWNER/REPO   # <- replaced with your GitHub repository during setup
+  repo: F2825/F2825.github.io
   branch: main
 
 media_folder: public/images/uploads
