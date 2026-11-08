@@ -1,0 +1,16 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { langPaths, t, type Lang } from '../../lib/i18n';
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const s = t(lang);
+const page = await getEntry('pages', `${lang}/about`);
+const { Content } = page ? await render(page) : { Content: null };
+---
+<Base lang={lang} title={page?.data.title ?? s.about} switchPath="about/">
+  <article class="wrap narrow reading section">
+    <h1 class="page-title">{page?.data.title ?? s.about}</h1>
+    <div class="prose">{Content ? <Content /> : <p>{s.tagline}</p>}</div>
+  </article>
+</Base>

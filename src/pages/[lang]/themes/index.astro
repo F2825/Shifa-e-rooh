@@ -1,0 +1,21 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { langPaths, t, url, type Lang } from '../../../lib/i18n';
+import { THEMES } from '../../../lib/themes';
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const s = t(lang);
+---
+<Base lang={lang} title={s.themes} switchPath="themes/">
+  <section class="wrap section">
+    <h1 class="page-title">{s.themes}</h1>
+    <div class="themes">
+      {THEMES.map((th) => (
+        <a class="theme" href={url(`${lang}/themes/${th.slug}/`)}>
+          <strong>{th.name[lang]}</strong>
+          <span>{th.description[lang]}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>

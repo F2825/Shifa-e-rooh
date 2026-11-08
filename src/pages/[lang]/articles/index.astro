@@ -1,0 +1,53 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import { langPaths, t, type Lang } from '../../../lib/i18n';
+import { THEMES } from '../../../lib/themes';
+import { getArticles } from '../../../lib/articles';
+export const getStaticPaths = langPaths;
+const lang = Astro.params.lang as Lang;
+const s = t(lang);
+const articles = await getArticles(lang);
+---
+<Base lang={lang} title={s.articles} switchPath="articles/">
+  <section class="wrap section">
+    <h1 class="page-title">{s.articles}</h1>
+    {articles.length === 0 ? <p class="empty">{s.empty}</p> : (
+      <>
+        <div class="filters">
+          <input type="search" id="q" placeholder={s.search} aria-label={s.search} />
+          <div class="chips" role="group">
+            <button type="button" data-filter="" aria-pressed="true">{s.all}</button>
+            {THEMES.map((th) => <button type="button" data-filter={th.slug} aria-pressed="false">{th.name[lang]}</button>)}
+          </div>
+        </div>
+        <div class="grid" id="list">{articles.map((a) => <ArticleCard article={a} lang={lang} />)}</div>
+        <p class="empty" id="none" hidden>{s.noResults}</p>
+      </>
+    )}
+  </section>
+  <script is:inline>
+    (() => {
+      const q = document.getElementById('q');
+      if (!q) return;
+      const cards = [...document.querySelectorAll('#list .card')];
+      const chips = [...document.querySelectorAll('[data-filter]')];
+      let theme = '';
+      const apply = () => {
+        const term = q.value.trim().toLowerCase();
+        let shown = 0;
+        for (const c of cards) {
+          const ok = (!theme || c.dataset.themeSlug === theme) && (!term || c.dataset.text.includes(term));
+          c.hidden = !ok; if (ok) shown++;
+        }
+        document.getElementById('none').hidden = shown > 0;
+      };
+      q.addEventListener('input', apply);
+      chips.forEach((b) => b.addEventListener('click', () => {
+        theme = b.dataset.filter;
+        chips.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        apply();
+      }));
+    })();
+  </script>
+</Base>

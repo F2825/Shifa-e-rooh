@@ -1,0 +1,17 @@
+---
+import { url } from '../lib/i18n';
+const en = url('en/'), ur = url('ur/'), ar = url('ar/');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Shifa-e-Rooh</title>
+    <meta http-equiv="refresh" content={`0; url=${en}`} />
+    <script is:inline define:vars={{ en, ur, ar }}>
+      const l = (navigator.language || '').slice(0, 2);
+      location.replace(l === 'ur' ? ur : l === 'ar' ? ar : en);
+    </script>
+  </head>
+  <body><a href={en}>English</a> · <a href={ur}>اردو</a> · <a href={ar}>العربية</a></body>
+</html>

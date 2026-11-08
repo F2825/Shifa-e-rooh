@@ -1,0 +1,114 @@
+# Editor configuration (Sveltia CMS). Open /admin/ on your website to write.
+backend:
+  name: github
+  repo: OWNER/REPO   # <- replaced with your GitHub repository during setup
+  branch: main
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: articles_en
+    label: "English articles"
+    label_singular: "English article"
+    folder: src/content/articles/en
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{title}} — {{date | date('YYYY-MM-DD')}}{{draft | ternary('  [DRAFT]', '')}}"
+    sortable_fields: [date, title]
+    fields:
+      - { label: "Title", name: title, widget: string }
+      - { label: "Summary (one or two sentences)", name: summary, widget: text }
+      - { label: "Date", name: date, widget: datetime }
+      - label: "Theme"
+        name: theme
+        widget: select
+        options:
+          - { label: "Character (Akhlāq)", value: character }
+          - { label: "Justice (ʿAdl)", value: justice }
+          - { label: "Mercy (Raḥmah)", value: mercy }
+          - { label: "Purification of the Soul (Tazkiyah)", value: tazkiyah }
+          - { label: "Knowledge & Wisdom (ʿIlm wa Ḥikmah)", value: wisdom }
+          - { label: "Secular Values in Dialogue", value: secular-values }
+      - { label: "Pull quote (optional, shown large at the top)", name: pullQuote, widget: text, required: false }
+      - { label: "Draft — keep ON while writing; turn OFF to publish", name: draft, widget: boolean, default: true }
+      - { label: "Article", name: body, widget: markdown }
+  - name: articles_ur
+    label: "Urdu articles"
+    label_singular: "Urdu article"
+    folder: src/content/articles/ur
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{year}}-{{month}}-{{day}}-{{fields.url_name}}"
+    summary: "{{title}} — {{date | date('YYYY-MM-DD')}}{{draft | ternary('  [DRAFT]', '')}}"
+    sortable_fields: [date, title]
+    fields:
+      - { label: "Title", name: title, widget: string }
+      - { label: "Web address (English letters, e.g. meaning-of-sabr)", name: url_name, widget: string, pattern: ["^[a-z0-9-]+$", "Use lowercase English letters, numbers and dashes only"] }
+      - { label: "Summary (one or two sentences)", name: summary, widget: text }
+      - { label: "Date", name: date, widget: datetime }
+      - label: "Theme"
+        name: theme
+        widget: select
+        options:
+          - { label: "Character (Akhlāq)", value: character }
+          - { label: "Justice (ʿAdl)", value: justice }
+          - { label: "Mercy (Raḥmah)", value: mercy }
+          - { label: "Purification of the Soul (Tazkiyah)", value: tazkiyah }
+          - { label: "Knowledge & Wisdom (ʿIlm wa Ḥikmah)", value: wisdom }
+          - { label: "Secular Values in Dialogue", value: secular-values }
+      - { label: "Pull quote (optional, shown large at the top)", name: pullQuote, widget: text, required: false }
+      - { label: "Draft — keep ON while writing; turn OFF to publish", name: draft, widget: boolean, default: true }
+      - { label: "Article", name: body, widget: markdown }
+  - name: articles_ar
+    label: "Arabic articles"
+    label_singular: "Arabic article"
+    folder: src/content/articles/ar
+    create: true
+    extension: md
+    format: frontmatter
+    slug: "{{year}}-{{month}}-{{day}}-{{fields.url_name}}"
+    summary: "{{title}} — {{date | date('YYYY-MM-DD')}}{{draft | ternary('  [DRAFT]', '')}}"
+    sortable_fields: [date, title]
+    fields:
+      - { label: "Title", name: title, widget: string }
+      - { label: "Web address (English letters, e.g. meaning-of-sabr)", name: url_name, widget: string, pattern: ["^[a-z0-9-]+$", "Use lowercase English letters, numbers and dashes only"] }
+      - { label: "Summary (one or two sentences)", name: summary, widget: text }
+      - { label: "Date", name: date, widget: datetime }
+      - label: "Theme"
+        name: theme
+        widget: select
+        options:
+          - { label: "Character (Akhlāq)", value: character }
+          - { label: "Justice (ʿAdl)", value: justice }
+          - { label: "Mercy (Raḥmah)", value: mercy }
+          - { label: "Purification of the Soul (Tazkiyah)", value: tazkiyah }
+          - { label: "Knowledge & Wisdom (ʿIlm wa Ḥikmah)", value: wisdom }
+          - { label: "Secular Values in Dialogue", value: secular-values }
+      - { label: "Pull quote (optional, shown large at the top)", name: pullQuote, widget: text, required: false }
+      - { label: "Draft — keep ON while writing; turn OFF to publish", name: draft, widget: boolean, default: true }
+      - { label: "Article", name: body, widget: markdown }
+  - name: pages
+    label: "Pages"
+    files:
+      - label: "About (English)"
+        name: about_en
+        file: src/content/pages/en/about.md
+        fields:
+          - { label: "Title", name: title, widget: string }
+          - { label: "Text", name: body, widget: markdown }
+      - label: "About (Urdu)"
+        name: about_ur
+        file: src/content/pages/ur/about.md
+        fields:
+          - { label: "Title", name: title, widget: string }
+          - { label: "Text", name: body, widget: markdown }
+      - label: "About (Arabic)"
+        name: about_ar
+        file: src/content/pages/ar/about.md
+        fields:
+          - { label: "Title", name: title, widget: string }
+          - { label: "Text", name: body, widget: markdown }

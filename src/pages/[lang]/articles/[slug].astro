@@ -1,0 +1,49 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import { LANGS, formatDate, t, url, type Lang } from '../../../lib/i18n';
+import { getTheme } from '../../../lib/themes';
+import { getArticles, readingMinutes, slugOf } from '../../../lib/articles';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const lang of LANGS) {
+    const list = await getArticles(lang);
+    for (const article of list) {
+      const related = list.filter((a) => a.id !== article.id && a.data.theme === article.data.theme).slice(0, 3);
+      paths.push({ params: { lang, slug: slugOf(article) }, props: { article, related } });
+    }
+  }
+  return paths;
+}
+const lang = Astro.params.lang as Lang;
+const { article, related } = Astro.props;
+const s = t(lang);
+const theme = getTheme(article.data.theme);
+const { Content } = await render(article);
+---
+<Base lang={lang} title={article.data.title} description={article.data.summary}>
+  <article class="wrap narrow reading">
+    <header class="article-head">
+      <a class="eyebrow" href={url(`${lang}/themes/${theme.slug}/`)}>{theme.name[lang]}</a>
+      <h1>{article.data.title}</h1>
+      <p class="lede">{article.data.summary}</p>
+      <p class="meta">
+        <time datetime={article.data.date.toISOString()}>{formatDate(article.data.date, lang)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{s.minRead(readingMinutes(article))}</span>
+        {article.data.draft && <span class="badge">{s.draft}</span>}
+      </p>
+    </header>
+    {article.data.pullQuote && <aside class="pull">{article.data.pullQuote}</aside>}
+    <div class="prose"><Content /></div>
+    <p class="back"><a href={url(`${lang}/articles/`)}>← {s.back}</a></p>
+  </article>
+  {related.length > 0 && (
+    <section class="wrap section">
+      <div class="section-head"><h2>{s.moreIn}</h2></div>
+      <div class="grid">{related.map((a) => <ArticleCard article={a} lang={lang} />)}</div>
+    </section>
+  )}
+</Base>

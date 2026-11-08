@@ -1,0 +1,95 @@
+---
+import '../styles/global.css';
+import Mark from '../components/Mark.astro';
+import { LANGS, LANG_META, t, url, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  /** Path after the language prefix used for the language switcher, e.g. "articles/". */
+  switchPath?: string;
+}
+const { lang, title, description, switchPath = '' } = Astro.props;
+const s = t(lang);
+const { dir } = LANG_META[lang];
+const pageTitle = title ? `${title} · ${s.siteName}` : s.siteName;
+const here = Astro.url.pathname;
+const nav = [
+  { href: url(`${lang}/`), label: s.home },
+  { href: url(`${lang}/articles/`), label: s.articles },
+  { href: url(`${lang}/themes/`), label: s.themes },
+  { href: url(`${lang}/about/`), label: s.about },
+];
+const fonts = {
+  en: 'family=Cormorant+Garamond:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400',
+  ur: 'family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Amiri:wght@400;700',
+  ar: 'family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;600',
+}[lang];
+---
+<!doctype html>
+<html lang={lang} dir={dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description ?? s.tagline} />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={s.siteName} href={url(`${lang}/rss.xml`)} />
+    {LANGS.map((l) => <link rel="alternate" hreflang={l} href={url(`${l}/${switchPath}`)} />)}
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description ?? s.tagline} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${fonts}&display=swap`} />
+    <script is:inline>
+      try { const m = localStorage.getItem('theme'); if (m) document.documentElement.dataset.theme = m; } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="brand" href={url(`${lang}/`)}>
+          <Mark />
+          <span>{s.siteName}</span>
+        </a>
+        <nav aria-label="Main">
+          {nav.map((n) => (
+            <a href={n.href} aria-current={(n.href === here || (n.href !== url(`${lang}/`) && here.startsWith(n.href))) ? 'page' : undefined}>{n.label}</a>
+          ))}
+        </nav>
+        <div class="tools">
+          <div class="langs" role="group" aria-label={s.language}>
+            {LANGS.map((l) => (
+              <a href={url(`${l}/${switchPath}`)} lang={l} aria-current={l === lang ? 'true' : undefined}>{LANG_META[l].label}</a>
+            ))}
+          </div>
+          <button class="mode" type="button" aria-label={s.toggleTheme} title={s.toggleTheme}>
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9z"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <Mark size={22} />
+        <p>{s.footer}</p>
+        <p class="small">© {new Date().getFullYear()} {s.siteName} · <a href={url(`${lang}/rss.xml`)}>RSS</a></p>
+      </div>
+    </footer>
+    <script is:inline>
+      document.querySelector('.mode')?.addEventListener('click', () => {
+        const root = document.documentElement;
+        const dark = root.dataset.theme
+          ? root.dataset.theme === 'dark'
+          : matchMedia('(prefers-color-scheme: dark)').matches;
+        root.dataset.theme = dark ? 'light' : 'dark';
+        try { localStorage.setItem('theme', root.dataset.theme); } catch {}
+      });
+    </script>
+  </body>
+</html>

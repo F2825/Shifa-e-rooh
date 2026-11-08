@@ -1,0 +1,24 @@
+---
+import Base from '../../../layouts/Base.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import { LANGS, t, type Lang } from '../../../lib/i18n';
+import { THEMES } from '../../../lib/themes';
+import { getArticles } from '../../../lib/articles';
+export function getStaticPaths() {
+  return LANGS.flatMap((lang) => THEMES.map((theme) => ({ params: { lang, theme: theme.slug }, props: { theme } })));
+}
+const lang = Astro.params.lang as Lang;
+const { theme } = Astro.props;
+const s = t(lang);
+const articles = (await getArticles(lang)).filter((a) => a.data.theme === theme.slug);
+---
+<Base lang={lang} title={theme.name[lang]} description={theme.description[lang]} switchPath={`themes/${theme.slug}/`}>
+  <section class="wrap section">
+    <p class="eyebrow">{s.themes}</p>
+    <h1 class="page-title">{theme.name[lang]}</h1>
+    <p class="lede">{theme.description[lang]}</p>
+    {articles.length
+      ? <div class="grid">{articles.map((a) => <ArticleCard article={a} lang={lang} />)}</div>
+      : <p class="empty">{s.emptyTheme}</p>}
+  </section>
+</Base>

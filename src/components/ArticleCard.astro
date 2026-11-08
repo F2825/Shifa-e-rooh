@@ -1,0 +1,20 @@
+---
+import { formatDate, t, url, type Lang } from '../lib/i18n';
+import { getTheme } from '../lib/themes';
+import { readingMinutes, slugOf, type Article } from '../lib/articles';
+interface Props { article: Article; lang: Lang }
+const { article, lang } = Astro.props;
+const s = t(lang);
+const theme = getTheme(article.data.theme);
+---
+<article class="card" data-theme-slug={theme.slug} data-text={`${article.data.title} ${article.data.summary}`.toLowerCase()}>
+  <p class="eyebrow">{theme.name[lang]}</p>
+  <h3><a href={url(`${lang}/articles/${slugOf(article)}/`)}>{article.data.title}</a></h3>
+  <p class="summary">{article.data.summary}</p>
+  <p class="meta">
+    <time datetime={article.data.date.toISOString()}>{formatDate(article.data.date, lang)}</time>
+    <span aria-hidden="true">·</span>
+    <span>{s.minRead(readingMinutes(article))}</span>
+    {article.data.draft && <span class="badge">{s.draft}</span>}
+  </p>
+</article>
